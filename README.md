@@ -15,7 +15,7 @@ Currently the library depends on following external libraries to build correctly
 * [jssc](https://code.google.com/p/java-simple-serial-connector/), Version 2.8.0, GNU LGPL
 * [Apache log4j](http://logging.apache.org/log4j/), Version 2.1, Apache License 2.0
 
-The log4j Framework is used, because of personal feelings. But the framework isn't that big. If anyone doesn't like
+The log4j Framework is used, as logging framwork. Because the jqcdm lib isn't big, if anyone doesn't like
 the log4j Framework it should be doable to remove every reference in a reasonable amount of time.
 The above list may not be correct at all times. Have a look at the `ivy.xml` file to be sure.
 
