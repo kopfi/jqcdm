@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Ant build File for the "jqcdm" project.
+     The build environment uses "Apache Ant" for the build system itself and 
+     "Apache Ivy" to resolve dependencies.
+-->
+<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless"
+	 name="jqcdm Library">
+<description>This project assembles a simple framework, that can be used to create QCDM messages.</description>
+	
+	<!-- all ANT properties are stored external in the build.properties file -->
+	<property file="build.properties" />
+	<property environment="hostos.env" />
+
+	<target name="init" description="initialize build environment">
+		<echo>Creating output directories</echo>
+		<mkdir dir="${classes.dir}" />
+		<mkdir dir="${ext.dir}" />
+		
+		<path id="ivy.lib.path">
+			<fileset dir="${basedir}" includes="ivy.jar" />
+		</path>
+		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant"
+			classpathref="ivy.lib.path" />
+		
+		<!-- this should work at least under windows and *nix system -->
+		<exec executable="hostname" outputproperty="computer.name" />
+	</target>
+	
+	
+	
+	<target name="clean"
+	description="deletes already compiled classes and prepared distributions">
+		<echo>deleting output directory</echo>
+		<delete dir="${classes.dir}" />
+		<delete dir="${ext.dir}" />
+	</target>
+
+	
+	
+	<target name="resolve" depends="init"
+		description="retrieve dependencies through ivy">
+		
+		<ivy:retrieve />
+	</target>
+	
+	
+	<target name="compile" depends="resolve,init"
+		description="compiles the java classes">
+		<echo>writing build information to file</echo>
+		<propertyfile file="${buildinfo.file}">
+			<entry key="build.number" type="int" operation="+" default="0" />
+			<entry key="build.host" type="string" operation="=" value="${computer.name}"
+				default="unknown" />
+			<entry key="build.user" type="string" operation="=" value="${hostos.env.USER}"
+				default="unknown" />
+			<entry key="build.date" type="date" operation="=" 
+			       value="now" pattern="YYYY-MM-dd HH:mm:ss.SSS Z"/>
+		</propertyfile>
+		
+		<echo>start compiling sources</echo>
+		<ivy:cachepath pathid="ivy.lib.path" />
+		<javac srcdir="${javasource.dir}" destdir="${classes.dir}" classpathref="ivy.lib.path" />
+	</target>
+
+    <target name="javadoc"
+            description="creates the javadoc API documentation">
+        <javadoc sourcepath="${javasource.dir}" destdir="${javadoc.dir}"></javadoc>
+    </target>
+	
+	<target name="run" depends="compile"
+		description="starts the class as set in the 'run.classname' property" >
+		
+		<!-- if property is not set, print a information message -->
+		<echo unless:set="run.classname">To use this task correctly, please set the "run.classname" property.</echo>
+		
+		<echo if:set="run.classname">==== starting the programm ======================================</echo>
+		<echo if:set="run.classname">Notice: all upcoming output from task [java] will be from the application</echo>
+		<java if:set="run.classname" classpathref="ivy.lib.path" classname="${run.classname}" fork="true" dir="${classes.dir}">
+			<classpath>
+				<dirset dir="${classes.dir}" />
+				<path refid="ivy.lib.path" />
+			</classpath>
+			<arg value="/dev/ttyUSB2" />
+			<arg value="output.bin" />
+		</java>
+		<echo if:set="run.classname">==== application finished =======================================</echo>
+	</target>
+
+</project>
+<!-- ### EOF build.xml ##################################################### -->
