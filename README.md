@@ -7,7 +7,7 @@ was initially written by using data, code and concepts from ModemManager libqcdm
 
 ##Credits
 All credits should go to the [ModemManager project] (http://www.freedesktop.org/wiki/Software/ModemManager/). This
-project alone made it possible to write this small Java port.
+project alone made it possible to start working on this small Java port.
 
 
 ##Dependencies

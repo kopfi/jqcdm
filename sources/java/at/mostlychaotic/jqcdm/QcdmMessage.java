@@ -21,7 +21,7 @@ public abstract class QcdmMessage {
 
     /**
      * This array contains the values for the Hex {@code String} created by the {@code getHexString} method. This method
-     * was written by <a href="http://stackoverflow.com/users/1284661/maybewecouldstealavan">maybeWeCouldStealAVa</a>.
+     * was written by <a href="http://stackoverflow.com/users/1284661/maybewecouldstealavan">maybeWeCouldStealAVan</a>.
      */
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
 

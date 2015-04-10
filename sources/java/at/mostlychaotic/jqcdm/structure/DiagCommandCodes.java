@@ -86,7 +86,7 @@ public enum DiagCommandCodes {
     ESN((byte) 1),
 
     /**
-     * This command reads a sqequence of bytes out of the interal memory.
+     * This command reads a sequence of bytes out of the internal memory.
      * On Huawei E220 it expects a start-address (4 byte) and a run-length (2 byte)
      */
     PEEKB((byte) 2),    //peek byte
