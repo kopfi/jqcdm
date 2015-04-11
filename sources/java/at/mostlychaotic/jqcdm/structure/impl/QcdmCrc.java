@@ -3,7 +3,8 @@ package at.mostlychaotic.jqcdm.structure.impl;
 import at.mostlychaotic.jqcdm.structure.ChecksumCalc;
 
 /**
- * Created by mkopfensteiner on 01.12.14.
+ * Implements the checksum calculation as seen in the libqcdm from the ModemManager project. This class is a helper
+ * class.
  */
 public class QcdmCrc implements ChecksumCalc {
     private static QcdmCrc mSingleton = new QcdmCrc();
