@@ -12,10 +12,14 @@
 	<property file="build.properties" />
 	<property environment="hostos.env" />
 
-	<target name="init" description="initialize build environment">
+	<target name="init" description="initializes the build environment">
 		<echo>Creating output directories</echo>
 		<mkdir dir="${classes.dir}" />
 		<mkdir dir="${ext.dir}" />
+
+		<echo>Downloading ivy, if necessary...</echo>
+		<get 	src="http://central.maven.org/maven2/org/apache/ivy/ivy/2.4.0/ivy-2.4.0.jar" 
+			dest="${basedir}/ivy.jar" skipexisting="true" />
 		
 		<path id="ivy.lib.path">
 			<fileset dir="${basedir}" includes="ivy.jar" />
@@ -23,7 +27,9 @@
 		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant"
 			classpathref="ivy.lib.path" />
 		
-		<!-- this should work at least under windows and *nix system -->
+		<!-- this should work at least under windows and *nix system;
+		     if you experience any problems with this task, simply comment it out and set
+		     the computer.name property by hand. -->
 		<exec executable="hostname" outputproperty="computer.name" />
 	</target>
 	
@@ -63,10 +69,10 @@
 		<javac srcdir="${javasource.dir}" destdir="${classes.dir}" classpathref="ivy.lib.path" />
 	</target>
 
-    <target name="javadoc"
-            description="creates the javadoc API documentation">
-        <javadoc sourcepath="${javasource.dir}" destdir="${javadoc.dir}"></javadoc>
-    </target>
+	<target name="javadoc"
+            	description="creates the javadoc API documentation">
+        	<javadoc sourcepath="${javasource.dir}" destdir="${javadoc.dir}"></javadoc>
+    	</target>
 	
 	<target name="run" depends="compile"
 		description="starts the class as set in the 'run.classname' property" >
