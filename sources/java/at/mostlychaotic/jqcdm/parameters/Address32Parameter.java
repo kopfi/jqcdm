@@ -1,10 +1,15 @@
 package at.mostlychaotic.jqcdm.parameters;
 
+import at.mostlychaotic.jqcdm.QcdmMessage;
+import at.mostlychaotic.jqcdm.parameters.helpers.ByteDecision;
+import at.mostlychaotic.jqcdm.parameters.helpers.CounterOperation;
+import at.mostlychaotic.jqcdm.parameters.helpers.CreateArrayOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Created by mkopfensteiner on 02.12.14.
+ * Implements a 32bit memory address parameter.
+ * @author Kopfi
  */
 public class Address32Parameter extends AbstractParameter {
     final private Logger mLogger = LogManager.getLogger(AbstractParameter.class);
@@ -17,7 +22,7 @@ public class Address32Parameter extends AbstractParameter {
     final public static long DEFAULT_ADDRESS = 0L;
     final public static int RESULT_SIZE = 4;
 
-    public Address32Parameter(byte size) {
+    public Address32Parameter() {
         super(Address32Parameter.DEFAULT_NAME);
         mAddress = Address32Parameter.DEFAULT_ADDRESS;
 
@@ -26,7 +31,11 @@ public class Address32Parameter extends AbstractParameter {
         mMaxAddress = (long) Math.pow(2.0, 32.0) - 1;
     }
 
-    public Address32Parameter(byte size, long address) {
+    public Address32Parameter(long address) {
+        this(Address32Parameter.DEFAULT_NAME, address);
+    }
+
+    public Address32Parameter(String name, long address) {
         super(Address32Parameter.DEFAULT_NAME);
         mAddress = address;
 
@@ -80,12 +89,44 @@ public class Address32Parameter extends AbstractParameter {
         } else mLogger.warn("Doesn't set new minimum address because it is less restrictive than old minimum address.");
     }
 
+    private int countEscapes() {
+        CounterOperation op = new CounterOperation(new ByteDecision() {
+            @Override
+            public boolean decide(byte b) {
+                return ((b == AbstractParameter.ESCAPE_BYTE) || (b == QcdmMessage.MARKER));
+            }
+        });
+
+        performOperationOnAddresBytes(op);
+
+        return op.getCounter();
+    }
+
+    //TODO check if really needed
+    private byte[] getAddressBytes() {
+        CreateArrayOperation op = new CreateArrayOperation(RESULT_SIZE);
+
+        performOperationOnAddresBytes(op);
+        return op.getArray();
+    }
+
+    private void performOperationOnAddresBytes(Operation op) {
+        long tmpAddress = mAddress;
+
+        for (int i = 0; i < RESULT_SIZE; i++) {
+            byte result = (byte) (tmpAddress & 0xFF);
+
+            op.doOperation(result);
+            tmpAddress = tmpAddress >>> 8;
+        }
+    }
 
     @Override
     public int getSize() {
-        return RESULT_SIZE;
+        return RESULT_SIZE + countEscapes();
     }
 
+    //TODO do it
     @Override
     public byte[] getBytes() {
         long tmpAddress = mAddress;
